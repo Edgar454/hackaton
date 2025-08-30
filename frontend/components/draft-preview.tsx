@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle, Edit, Save, Trash2 } from "lucide-react"
 import type { Ticket } from "@/app/page"
+import {postMail} from "@/lib/api"
 
 interface DraftPreviewProps {
   ticket: Ticket
@@ -16,6 +17,7 @@ interface DraftPreviewProps {
 
 export function DraftPreview({ ticket, onClose, onUpdate }: DraftPreviewProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [receiver_email, setEmail] = useState("")
   const [subject, setSubject] = useState(ticket.subject || "")
   const [body, setBody] = useState(ticket.body || "")
 
@@ -23,14 +25,21 @@ export function DraftPreview({ ticket, onClose, onUpdate }: DraftPreviewProps) {
     onUpdate({
       ...ticket,
       subject,
+      receiver_email,
       body,
     })
     setIsEditing(false)
   }
 
   const handleValidateAndSend = () => {
-    // In a real app, this would send the email
-    console.log("Sending email:", { subject, body })
+    postMail(subject, body , receiver_email)
+      .then(() => {
+        console.log("Email sent successfully")
+      })
+      .catch((error) => {
+        console.error("Error sending email:", error)
+      })
+    
     onClose()
   }
 
@@ -47,6 +56,17 @@ export function DraftPreview({ ticket, onClose, onUpdate }: DraftPreviewProps) {
           <DialogTitle className="text-balance">Draft Preview - {ticket.ticketId}</DialogTitle>
           <DialogDescription>Review and edit your email draft before sending</DialogDescription>
         </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">To</label>
+            {isEditing ? (
+              <Input value={receiver_email} onChange={(e) => setEmail(e.target.value)} placeholder="Recipient email" />
+            ) : (
+              <div className="p-3 bg-muted rounded-md text-foreground">{receiver_email || "No recipient"}</div>
+            )}
+          </div>
+        </div>
 
         <div className="space-y-4">
           <div className="space-y-2">

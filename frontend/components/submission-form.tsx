@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Send } from "lucide-react"
 
+
 interface SubmissionFormProps {
   onSubmit: (ticketId: string) => void
 }
@@ -21,6 +22,7 @@ export function SubmissionForm({ onSubmit }: SubmissionFormProps) {
     if (!ticketId.trim()) return
 
     setIsSubmitting(true)
+    console.log("Submitting ticket ID:", ticketId)
     onSubmit(ticketId.trim())
     setTicketId("")
 
